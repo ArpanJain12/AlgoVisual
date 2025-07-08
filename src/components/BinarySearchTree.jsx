@@ -229,6 +229,22 @@ const renderTree = (node, x, y, level = 0, dx = 150, highlights = [], found = nu
   return children;
 };
 
+const ErrorBar = ({ message, onClose }) => {
+  if (!message) return null;
+  
+  return (
+    <div className="bg-red-600 border border-red-700 text-white px-4 py-3 rounded-lg mb-4 flex items-center justify-between">
+      <span className="text-sm">{message}</span>
+      <button 
+        onClick={onClose}
+        className="text-white hover:text-red-200 ml-4 font-bold text-lg"
+      >
+        ×
+      </button>
+    </div>
+  );
+};
+
 const BSTVisualizer = ({ onBack }) => {
   const [input, setInput] = useState("");
   const [steps, setSteps] = useState([]);
@@ -238,6 +254,7 @@ const BSTVisualizer = ({ onBack }) => {
   const [action, setAction] = useState("find");
   const [actionValue, setActionValue] = useState("");
   const [foundValue, setFoundValue] = useState(null);
+  const [error, setError] = useState("");
 
   // Reset tree when input changes
   const handleInputChange = (e) => {
@@ -248,18 +265,20 @@ const BSTVisualizer = ({ onBack }) => {
     setStepIdx(0);
     setAuto(false);
     setFoundValue(null);
+    setError("");
   };
 
   const buildTree = () => {
+    setError("");
     if (!input.trim()) {
-      alert("Enter comma-separated values");
+      setError("Enter comma-separated values");
       setSteps([]);
       return;
     }
     const parts = input.split(",").map(v => v.trim());
 
     if (parts.some(v => v === "" || isNaN(Number(v)))) {
-      alert("Enter valid comma-separated numbers with no blanks (e.g. 5, 3, 8)");
+      setError("Enter valid comma-separated numbers with no blanks (e.g. 5, 3, 8)");
       setSteps([]);
       return;
     }
@@ -274,13 +293,26 @@ const BSTVisualizer = ({ onBack }) => {
   };
 
   const handleAction = () => {
+    setError("");
     const val = parseInt(actionValue);
     if (isNaN(val)){
-        if(action==="find") return alert("Enter a valid number to search");
-        else if(action==="insert") return alert("Enter a valid number to insert");
-        else if(action==="delete") return alert("Enter a valid number to delete");
+        if(action==="find") {
+          setError("Enter a valid number to search");
+          return;
+        }
+        else if(action==="insert") {
+          setError("Enter a valid number to insert");
+          return;
+        }
+        else if(action==="delete") {
+          setError("Enter a valid number to delete");
+          return;
+        }
     }
-    if (!treeRoot) return alert("Build BST first");
+    if (!treeRoot) {
+      setError("Build BST first");
+      return;
+    }
 
     let result = [];
     setFoundValue(null);
@@ -288,7 +320,10 @@ const BSTVisualizer = ({ onBack }) => {
       result = findInBST(treeRoot, val);
     } else if (action === "insert") result = insertIntoBST(treeRoot, val);
     else if (action === "delete") result = deleteFromBST(treeRoot, val,setTreeRoot);
-    else alert("Invalid action");
+    else {
+      setError("Invalid action");
+      return;
+    }
 
     setSteps(result);
     setStepIdx(0);
@@ -332,84 +367,156 @@ const BSTVisualizer = ({ onBack }) => {
   const centerX = svgWidth / 2;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-        <div className="text-white max-w-7xl mx-auto pt-4 px-4">
-      <button onClick={onBack} className="mb-4 text-blue-400 hover:underline">
-        ← Back
-      </button>
-      <h2 className="text-2xl font-bold mb-4">Binary Search Tree Visualizer</h2>
-      <input
-        type="text"
-        className="w-full p-2 mb-4 rounded bg-gray-700"
-        value={input}
-        onChange={handleInputChange}
-        placeholder="Enter values (e.g. 5,3,8,2,7,1,9,4,6)"
-      />
-      <div className="flex gap-4 mb-4 flex-wrap">
-        <button onClick={buildTree} className="px-4 py-2 bg-purple-600 rounded">
-          Build BST
-        </button>
-        <button
-          onClick={() => setStepIdx((i) => Math.max(0, i - 1))}
-          disabled={stepIdx === 0}
-          className="px-4 py-2 bg-gray-700 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => setStepIdx((i) => Math.min(steps.length - 1, i + 1))}
-          disabled={stepIdx >= steps.length - 1}
-          className="px-4 py-2 bg-gray-700 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-        <button onClick={() => setAuto((a) => !a)} className="px-4 py-2 bg-purple-600 rounded">
-          {auto ? "Pause" : "Autoplay"}
-        </button>
-      </div>
-
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
-        <select
-          className="p-2 bg-gray-700 rounded"
-          value={action}
-          onChange={(e) => setAction(e.target.value)}
-        >
-          <option value="find">Find</option>
-          <option value="insert">Insert</option>
-          <option value="delete">Delete</option>
-        </select>
-        <input
-          type="text"
-          className="p-2 bg-gray-700 rounded"
-          placeholder="Value"
-          value={actionValue}
-          onChange={(e) => setActionValue(e.target.value)}
-        />
-        <button onClick={handleAction} className="px-4 py-2 bg-blue-600 rounded">
-          Run
-        </button>
-      </div>
-
-      <div className="mb-4 text-center text-sm italic text-gray-300 min-h-[24px]">
-        {current.explanation}
-      </div>
-      
-      {treeDimensions.nodeCount > 0 && (
-        <div className="mb-2 text-xs text-gray-400 text-center">
-          Tree size: {treeDimensions.nodeCount} nodes
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-800 to-slate-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <button 
+            onClick={onBack} 
+            className="flex items-center text-blue-400 hover:text-blue-300 transition-colors duration-200"
+          >
+            <span className="mr-2">←</span>
+            <span className="hidden sm:inline">Back</span>
+          </button>
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2 pb-2">
+            Binary Search Tree Visualizer
+          </h1>
+          <div className="w-16"></div> {/* Spacer for centering */}
         </div>
-      )}
-      
-      <div className="overflow-auto border border-gray-600 rounded-lg bg-gray-800">
-        <svg width={svgWidth} height={svgHeight} className="min-w-full">
-          <g key={`tree-${stepIdx}-${JSON.stringify(current.tree)}`}>
-            {renderTree(current.tree, centerX, 60, 0, initialDx, current.highlight, foundValue)}
-          </g>
-        </svg>
+
+        {/* Error Bar */}
+        
+
+        {/* Input Section */}
+        <div className="bg-gray-800 rounded-xl p-5 mb-6 shadow-2xl border border-gray-700">
+            {error && (
+                                    <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg flex items-center gap-2 mb-2">
+                                        <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span className="text-sm">{error}</span>
+                                    </div>
+                                )}
+          <label className="block text-sm font-medium text-blue-300 mb-2">
+            Enter Values (comma-separated)
+          </label>
+          <input
+            type="text"
+            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+            value={input}
+            onChange={handleInputChange}
+            placeholder="e.g. 5,3,8,2,7,1,9,4,6"
+          />
+          <button 
+            onClick={buildTree} 
+            className="mt-6 w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg"
+          >
+            Build BST
+          </button>
+        </div>
+
+        {/* Controls Section */}
+        <div className="bg-gray-800 rounded-xl p-6 mb-6 shadow-2xl border border-gray-700">
+          {/* Navigation Controls */}
+          <div className="flex flex-wrap gap-3 mb-4">
+            <button
+              onClick={() => setStepIdx((i) => Math.max(0, i - 1))}
+              disabled={stepIdx === 0}
+              className="flex-1 sm:flex-none px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 rounded-lg transition-colors duration-200"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setStepIdx((i) => Math.min(steps.length - 1, i + 1))}
+              disabled={stepIdx >= steps.length - 1}
+              className="flex-1 sm:flex-none px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 rounded-lg transition-colors duration-200"
+            >
+              Next
+            </button>
+            <button 
+              onClick={() => setAuto((a) => !a)} 
+              className="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition-all transform hover:scale-105 duration-200"
+            >
+              {auto ? "Pause" : "Autoplay"}
+            </button>
+          </div>
+
+          {/* Action Controls */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <select
+              className="flex-1 sm:flex-none p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={action}
+              onChange={(e) => setAction(e.target.value)}
+            >
+              <option value="find">Find</option>
+              <option value="insert">Insert</option>
+              <option value="delete">Delete</option>
+            </select>
+            <input
+              type="text"
+              className="flex-1 sm:flex-none p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Value"
+              value={actionValue}
+              onChange={(e) => setActionValue(e.target.value)}
+            />
+            <button 
+              onClick={handleAction} 
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-blue-700 hover:to-teal-700 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+            >
+              Run
+            </button>
+          </div>
+        </div>
+
+        {/* Status Section */}
+        <div className="bg-gray-800 rounded-xl p-4 mb-6 shadow-2xl border border-gray-700">
+          <div className="text-center">
+            <div className="text-sm text-gray-300 mb-2 min-h-[20px]">
+              {current.explanation || "Ready to build BST"}
+            </div>
+            {treeDimensions.nodeCount > 0 && (
+              <div className="text-xs text-gray-400">
+                Tree size: {treeDimensions.nodeCount} nodes
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tree Visualization */}
+        <div className="bg-gray-800 rounded-xl p-4 shadow-2xl border border-gray-700">
+          <div className="overflow-auto">
+            <svg width={svgWidth} height={svgHeight} className="min-w-full">
+              <defs>
+                <linearGradient id="treeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{stopColor: '#1f2937', stopOpacity: 1}} />
+                  <stop offset="100%" style={{stopColor: '#374151', stopOpacity: 1}} />
+                </linearGradient>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#treeGradient)" />
+              <g key={`tree-${stepIdx}-${JSON.stringify(current.tree)}`}>
+                {renderTree(current.tree, centerX, 60, 0, initialDx, current.highlight, foundValue)}
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+            <span>Default</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+            <span>Visited</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+            <span>Found</span>
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-    
   );
 };
 

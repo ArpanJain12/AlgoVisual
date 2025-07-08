@@ -44,13 +44,13 @@ const algorithms = [
   },
   {
     name: "Sorting Algorithms",
-    description: "Sort the given array by different algorithms",
+    description: "Visualize and understand different sorting algorithms",
     id: "sorting-algorithms",
     image: "/images/sorting-algorithms.png",
   },
   {
     name: "Binary Search Tree",
-    description: "Insert Delete and Find Element in BST",
+    description: "Visualize Insertion, Deletion and Find operation in BST",
     id: "bst",
     image: "/images/bst.png",
   },
