@@ -95,7 +95,7 @@ const SlidingWindow = ({ onBack = () => {} }) => {
         </div>
 
         <div className="text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-8 pb-2 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             Sliding Window Visualizer
           </h2>
         </div>
@@ -192,14 +192,21 @@ const SlidingWindow = ({ onBack = () => {} }) => {
           ) : (
             <div className="space-y-6">
               {/* Array Visualization */}
-              <div className="bg-gray-700/30 rounded-xl p-6 overflow-x-auto">
-                <div className="flex flex-col items-center space-y-4">
+              <div className="bg-slate-800/50 backdrop-blur-sm border-slate-700 shadow-2xl rounded-xl p-6 shadow-2xl">
+                <div className="flex flex-col items-center space-y-6">
+                  <div className="text-center">
+                                    <h3 className="text-lg font-semibold text-gray-300 mb-2">Window Size: 
+                                        <span className="text-yellow-400 font-bold ml-2">{windowSize}</span>
+                                    </h3>
+                                </div>
+                  <div className="w-full overflow-x-auto">
+                                    <div className="flex flex-col items-center space-y-4 min-w-max mx-auto">
                   {/* Index Labels */}
-                  <div className="flex gap-1 min-w-max">
+                  <div className="flex gap-1 sm:gap-2">
                     {array.map((_, idx) => (
                       <div
                         key={idx}
-                        className="w-12 lg:w-14 text-center text-xs text-blue-300 flex-shrink-0 pb-2 font-mono"
+                        className="w-12 sm:w-16 text-center text-xs text-blue-300 flex-shrink-0 pb-2 font-mono"
                       >
                         {idx}
                       </div>
@@ -207,13 +214,13 @@ const SlidingWindow = ({ onBack = () => {} }) => {
                   </div>
                   
                   {/* Array Values */}
-                  <div className="flex gap-1 min-w-max">
+                  <div className="flex gap-1 sm:gap-2">
                     {array.map((val, idx) => {
                       const inWindow = idx >= start && idx <= end;
                       return (
                         <div
                           key={idx}
-                          className={`w-12 h-12 lg:w-14 lg:h-14 rounded-lg flex items-center justify-center font-bold transition-all duration-500 text-sm lg:text-base flex-shrink-0 shadow-lg ${
+                          className={`w-14 h-14 sm:w-16 lg:h-14 rounded-lg flex items-center justify-center font-bold transition-all duration-500 text-sm lg:text-base flex-shrink-0 shadow-lg ${
                             inWindow 
                               ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-black transform scale-110 -translate-y-2 shadow-yellow-400/50" 
                               : "bg-gray-600 text-white hover:bg-gray-500"
@@ -224,11 +231,13 @@ const SlidingWindow = ({ onBack = () => {} }) => {
                       );
                     })}
                   </div>
+                  </div>
+                  </div>
                 </div>
               </div>
 
               {/* Window Info */}
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700 shadow-2xl">
                 <div className="text-center">
                   <div className="text-blue-300 mb-2 text-sm lg:text-base">
                     <span className="font-semibold">Current Window:</span> [{start} - {end}]
@@ -276,25 +285,26 @@ const SlidingWindow = ({ onBack = () => {} }) => {
                                     </svg>
                                 </button>
                 <button
-                                    onClick={() => setAutoplay((prev) => !prev)}
-                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-all duration-200 flex items-center gap-2"
-                                >
-                                    {autoplay ? (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
-                                            </svg>
-                                            Pause
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 00.707-.293l.707-.707a1 1 0 01.707-.293H15" />
-                                            </svg>
-                                            Autoplay
-                                        </>
-                                    )}
-                                </button>
+                  onClick={() => setAutoplay((prev) => !prev)}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  {autoplay ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
+                      </svg>
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.5a2.5 2.5 0 015 0H17M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Autoplay
+                    </>
+                  )}
+                </button>
+                
                 <button
                                     onClick={handleReset}
                                     className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-200 flex items-center gap-2"

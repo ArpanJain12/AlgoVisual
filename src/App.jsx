@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Analytics } from '@vercel/analytics/react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useParams } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -249,6 +250,7 @@ function App() {
           </div>
         } />
       </Routes>
+      import { Analytics } from '@vercel/analytics/react';
     </Router>
   );
 }

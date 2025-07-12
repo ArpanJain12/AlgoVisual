@@ -84,7 +84,7 @@ const BinarySearch = ({ onBack }) => {
                 const next = prev < steps.length - 1 ? prev + 1 : 0;
                 return next;
             });
-        }, 1000);
+        }, 1200);
         return () => clearInterval(intervalRef.current);
     }, [autoplay, running, steps]);
 
@@ -318,25 +318,26 @@ const BinarySearch = ({ onBack }) => {
                                 </button>
                                 
                                 <button
-                                    onClick={() => setAutoplay((prev) => !prev)}
-                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-all duration-200 flex items-center gap-2"
-                                >
-                                    {autoplay ? (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
-                                            </svg>
-                                            Pause
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 00.707-.293l.707-.707a1 1 0 01.707-.293H15" />
-                                            </svg>
-                                            Autoplay
-                                        </>
-                                    )}
-                                </button>
+                  onClick={() => setAutoplay((prev) => !prev)}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  {autoplay ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6" />
+                      </svg>
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.5a2.5 2.5 0 015 0H17M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Autoplay
+                    </>
+                  )}
+                </button>
+                
                                 
                                 <button
                                     onClick={handleReset}
