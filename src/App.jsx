@@ -250,7 +250,7 @@ function App() {
           </div>
         } />
       </Routes>
-      import { Analytics } from '@vercel/analytics/react';
+      <Analytics/>
     </Router>
   );
 }
