@@ -120,10 +120,10 @@ function Home() {
                   </div>
 
                   {/* Text content */}
-                  <h2 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors duration-300">
+                  <h2 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-100 transition-colors duration-300">
                     {algo.name}
                   </h2>
-                  <p className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
+                  <p className="text-sm text-gray-300 group-hover:text-white transition-colors duration-300 leading-relaxed">
                     {algo.description}
                   </p>
 
